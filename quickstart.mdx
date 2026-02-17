@@ -1,0 +1,262 @@
+---
+title: Quickstart
+description: Get started with the Vega Sample Package in minutes
+---
+
+This guide walks you through implementing both the Content Launcher and Media Controls APIs in a Fire TV application.
+
+## Content Launcher quickstart
+
+Handle content launch requests from Alexa or the Fire TV home screen.
+
+### Step 1: Import the API
+
+```typescript
+import {
+  handleLaunchContent,
+  EntityType,
+  type IContentSearch,
+  type ContentLaunchPayload,
+} from 'vega-sample-package';
+```
+
+### Step 2: Process a launch request
+
+```typescript
+// Example: "Alexa, watch Seabound"
+const contentSearch: IContentSearch = {
+  entities: [
+    {
+      type: EntityType.VIDEO,
+      externalIdList: [{ name: 'amzn_id', value: '1700000725' }],
+    },
+  ],
+  searchKeyword: 'Seabound',
+};
+
+const payload: ContentLaunchPayload = handleLaunchContent(
+  contentSearch,
+  true, // autoPlay = true
+  {}
+);
+
+console.log(payload);
+// {
+//   launchIntent: 'play',
+//   searchKeyword: 'Seabound',
+//   amzn_id: '1700000725'
+// }
+```
+
+### Step 3: Handle the intent
+
+```typescript
+switch (payload.launchIntent) {
+  case 'play':
+    // Direct playback
+    playContent(payload.amzn_id);
+    break;
+  case 'search':
+    // Show search results
+    showSearchResults(payload.searchKeyword);
+    break;
+  case 'playshow':
+    // Episodic playback
+    playEpisode(payload.amzn_id, payload.seasonNumber, payload.episodeNumber);
+    break;
+}
+```
+
+## Media Controls quickstart
+
+Implement media control handlers and manage playback sessions.
+
+### Step 1: Import the API
+
+```typescript
+import {
+  SessionManager,
+  PlaybackState,
+  type IMediaControlHandlerAsync,
+  type MediaSession,
+} from 'vega-sample-package';
+```
+
+### Step 2: Implement the handler
+
+```typescript
+const handler: IMediaControlHandlerAsync = {
+  async handlePlay() {
+    player.resume();
+  },
+  async handlePause() {
+    player.pause();
+  },
+  async handleStop() {
+    player.stop();
+  },
+  async handleSeek(positionMs: number) {
+    player.seekTo(positionMs);
+  },
+  async handleNext() {
+    playlist.next();
+  },
+  async handlePrevious() {
+    playlist.previous();
+  },
+  async handleFastForward() {
+    player.fastForward();
+  },
+  async handleRewind() {
+    player.rewind();
+  },
+  async handleSkipForward(intervalMs: number) {
+    player.skip(intervalMs);
+  },
+  async handleSkipBackward(intervalMs: number) {
+    player.skip(-intervalMs);
+  },
+  async handleTogglePlayPause() {
+    player.togglePlayPause();
+  },
+  async handleStartOver() {
+    player.seekTo(0);
+  },
+};
+```
+
+### Step 3: Create a session
+
+```typescript
+const manager = new SessionManager();
+
+const session: MediaSession = manager.createSession({
+  title: 'Planet Earth II',
+  playbackState: PlaybackState.PLAYING,
+  supportedControls: ['play', 'pause', 'stop', 'seek'],
+  capabilities: {
+    canSeek: true,
+    canSkipForward: true,
+    canSkipBackward: true,
+    canFastForward: false,
+    canRewind: false,
+    canSetPlaybackSpeed: false,
+  },
+  positionMs: 0,
+  durationMs: 3600000, // 1 hour
+});
+
+console.log(session.sessionId); // "session-1"
+```
+
+### Step 4: Listen for state changes
+
+```typescript
+manager.addListener(session.sessionId, (updated) => {
+  console.log(`State: ${updated.playbackState}`);
+  console.log(`Position: ${updated.positionMs}ms`);
+});
+```
+
+### Step 5: Update the session
+
+```typescript
+// When the player state changes, update the session
+await handler.handlePause();
+manager.updateSession(session.sessionId, {
+  playbackState: PlaybackState.PAUSED,
+});
+```
+
+## Complete example
+
+Here's a minimal Fire TV app integrating both APIs:
+
+```typescript
+import {
+  // Content Launcher
+  handleLaunchContent,
+  EntityType,
+  type IContentSearch,
+  
+  // Media Controls
+  SessionManager,
+  PlaybackState,
+  type IMediaControlHandlerAsync,
+} from 'vega-sample-package';
+
+// Initialize session manager
+const sessionManager = new SessionManager();
+
+// Handle content launch from Alexa
+function onContentLaunch(contentSearch: IContentSearch, autoPlay: boolean) {
+  const payload = handleLaunchContent(contentSearch, autoPlay, {});
+  
+  if (payload.launchIntent === 'play' && payload.amzn_id) {
+    // Create a media session for the content
+    const session = sessionManager.createSession({
+      title: payload.searchKeyword || 'Unknown',
+      playbackState: PlaybackState.PLAYING,
+      supportedControls: ['play', 'pause', 'stop', 'seek'],
+      capabilities: {
+        canSeek: true,
+        canSkipForward: true,
+        canSkipBackward: true,
+        canFastForward: false,
+        canRewind: false,
+        canSetPlaybackSpeed: false,
+      },
+      positionMs: 0,
+      durationMs: 0, // Will be updated when metadata loads
+    });
+    
+    // Start playback
+    startPlayback(payload.amzn_id, session.sessionId);
+  }
+}
+
+// Implement media control handler
+const mediaHandler: IMediaControlHandlerAsync = {
+  async handlePlay() {
+    videoPlayer.play();
+  },
+  async handlePause() {
+    videoPlayer.pause();
+  },
+  async handleStop() {
+    videoPlayer.stop();
+  },
+  async handleSeek(positionMs: number) {
+    videoPlayer.currentTime = positionMs / 1000;
+  },
+  // ... implement other handlers
+};
+
+// Update session when player state changes
+videoPlayer.on('statechange', (state) => {
+  const currentSession = sessionManager.getAllSessions()[0];
+  if (currentSession) {
+    sessionManager.updateSession(currentSession.sessionId, {
+      playbackState: state === 'playing' ? PlaybackState.PLAYING : PlaybackState.PAUSED,
+      positionMs: videoPlayer.currentTime * 1000,
+    });
+  }
+});
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Content Launcher overview" icon="rocket" href="/content-launcher/overview">
+    Deep dive into the Content Launcher API
+  </Card>
+  <Card title="Media Controls overview" icon="gamepad" href="/media-controls/overview">
+    Deep dive into the Media Controls API
+  </Card>
+  <Card title="Content Launcher examples" icon="code" href="/content-launcher/examples">
+    Explore more Content Launcher examples
+  </Card>
+  <Card title="Media Controls examples" icon="code" href="/media-controls/examples">
+    Explore more Media Controls examples
+  </Card>
+</CardGroup>
