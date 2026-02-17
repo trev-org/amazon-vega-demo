@@ -1,0 +1,139 @@
+---
+title: Installation
+description: Install and configure the Vega Sample Package in your project
+---
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Node.js** — Version 16.x or higher
+- **npm** or **yarn** — Package manager
+- **TypeScript** — Version 5.3.0 or higher (included as a dev dependency)
+
+## Install the package
+
+<CodeGroup>
+
+```bash npm
+npm install vega-sample-package
+```
+
+```bash yarn
+yarn add vega-sample-package
+```
+
+```bash pnpm
+pnpm add vega-sample-package
+```
+
+</CodeGroup>
+
+## Development setup
+
+If you want to contribute to the package or run the examples locally, clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/drpasupuleti/vega-sample-package.git
+cd vega-sample-package
+npm install
+```
+
+## Build the package
+
+Compile the TypeScript source to JavaScript:
+
+```bash
+npm run build
+```
+
+This generates the compiled output in the `dist/` directory.
+
+## Run tests
+
+The package includes comprehensive unit tests and property-based tests:
+
+```bash
+npm test
+```
+
+## Type checking
+
+Verify TypeScript types without emitting output:
+
+```bash
+npm run typecheck
+```
+
+## Linting
+
+Check code quality with ESLint:
+
+```bash
+npm run lint
+```
+
+## Project structure
+
+After installation, you'll have access to the following modules:
+
+```typescript
+import {
+  // Content Launcher API
+  handleLaunchContent,
+  EntityType,
+  type ContentLaunchPayload,
+  type IContentSearch,
+  
+  // Media Controls API
+  SessionManager,
+  EndpointDiscovery,
+  PlaybackState,
+  type MediaSession,
+  type IMediaControlHandlerAsync,
+} from 'vega-sample-package';
+```
+
+## TypeScript configuration
+
+The package is built with strict TypeScript settings. If you're using TypeScript in your project, ensure your `tsconfig.json` is compatible:
+
+```json tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "lib": ["ES2020"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  }
+}
+```
+
+## React Native setup
+
+This package is designed for React Native applications targeting Fire TV devices. Ensure you have the React Native Fire TV SDK configured:
+
+```bash
+npm install react-native
+```
+
+<Note>
+  The package uses TypeScript interfaces compatible with React Native 0.72.0 and higher.
+</Note>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="bolt" href="/quickstart">
+    Build your first integration in minutes
+  </Card>
+  <Card title="Content Launcher" icon="rocket" href="/content-launcher/overview">
+    Explore the Content Launcher API
+  </Card>
+</CardGroup>
