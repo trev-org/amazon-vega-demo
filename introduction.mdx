@@ -1,0 +1,168 @@
+---
+title: Introduction
+description: A reference implementation demonstrating Vega OS Content Launcher and Media Controls APIs for Fire TV applications
+---
+
+# Vega Sample Package
+
+The Vega Sample Package is a TypeScript reference implementation demonstrating two core Vega OS APIs for Fire TV applications. This package provides production-ready code examples, comprehensive type definitions, and property-based tests to help you integrate your React Native app with Fire TV's platform features.
+
+## What is Vega OS?
+
+Vega OS is Amazon's operating system for Fire TV devices. It provides APIs that enable apps to integrate deeply with the Fire TV home launcher, Alexa voice commands, and system-level media controls.
+
+## APIs included
+
+### Content Launcher API
+
+The Content Launcher API enables your app to integrate with the Fire TV home launcher and Alexa voice commands. Users can search for and launch content directly through voice utterances like "Alexa, play Seabound" or through the Fire TV home screen.
+
+**Key features:**
+- Parse content search requests from Alexa and the Fire TV launcher
+- Extract Amazon content identifiers (`amzn_id`) from external ID lists
+- Determine launch intent (play, search, or episodic playback)
+- Handle episodic content with season and episode resolution
+- Serialize and deserialize content launch payloads
+
+### Media Controls API
+
+The Media Controls API provides functionality for integrating diverse input modalities (remote control, voice commands, touch) for media playback control. It defines both client-side command dispatch and provider-side command handling.
+
+**Key features:**
+- Session lifecycle management (create, update, destroy)
+- Endpoint discovery for registered media provider apps
+- Comprehensive playback controls (play, pause, seek, skip, etc.)
+- Session state change notifications via listeners
+- Support for multiple concurrent sessions (e.g., picture-in-picture)
+- Capability flags for adaptive UI and voice routing
+
+## Package structure
+
+```
+src/
+├── content-launcher/
+│   ├── content-launcher.ts    # Core processing logic
+│   ├── types.ts                # Type definitions
+│   ├── examples/               # Usage examples
+│   └── index.ts
+├── media-controls/
+│   ├── session-manager.ts      # Session lifecycle management
+│   ├── discovery.ts            # Endpoint discovery
+│   ├── types.ts                # Type definitions
+│   ├── examples/               # Usage examples
+│   └── index.ts
+└── index.ts                    # Package entry point
+```
+
+## Installation
+
+```bash
+npm install vega-sample-package
+```
+
+## Quick start
+
+### Content Launcher example
+
+```typescript
+import { handleLaunchContent, EntityType } from 'vega-sample-package';
+
+// Handle a content launch request from Alexa or Fire TV launcher
+const contentSearch = {
+  entities: [
+    {
+      type: EntityType.VIDEO,
+      externalIdList: [{ name: 'amzn_id', value: '1700000725' }]
+    }
+  ],
+  searchKeyword: 'Seabound'
+};
+
+const payload = handleLaunchContent(contentSearch, true, {});
+// payload.launchIntent === 'play'
+// payload.amzn_id === '1700000725'
+```
+
+### Media Controls example
+
+```typescript
+import { SessionManager, PlaybackState } from 'vega-sample-package';
+
+const manager = new SessionManager();
+
+// Create a new media session
+const session = manager.createSession({
+  title: 'Planet Earth II',
+  playbackState: PlaybackState.PLAYING,
+  supportedControls: ['play', 'pause', 'stop', 'seek'],
+  capabilities: {
+    canSeek: true,
+    canSkipForward: true,
+    canSkipBackward: true,
+    canFastForward: false,
+    canRewind: false,
+    canSetPlaybackSpeed: false
+  },
+  positionMs: 0,
+  durationMs: 3600000
+});
+
+// Listen for state changes
+manager.addListener(session.sessionId, (updated) => {
+  console.log(`Playback state: ${updated.playbackState}`);
+});
+
+// Update session state
+manager.updateSession(session.sessionId, {
+  playbackState: PlaybackState.PAUSED,
+  positionMs: 120000
+});
+```
+
+## Features
+
+- **TypeScript strict mode** - Full type safety with comprehensive type definitions
+- **TSDoc annotations** - Complete API documentation on all public interfaces
+- **Property-based testing** - Correctness validation using fast-check
+- **Unit tests** - Jest test suite for all core functionality
+- **ESLint configuration** - Code quality enforcement
+- **Production-ready** - Reference implementation suitable for real-world use
+
+## Documentation
+
+All public APIs include comprehensive TSDoc annotations. Generate documentation using your preferred TypeScript documentation tool (e.g., TypeDoc).
+
+## Testing
+
+```bash
+# Run unit tests
+npm test
+
+# Run type checking
+npm run typecheck
+
+# Run linter
+npm run lint
+```
+
+## Requirements
+
+- React Native 0.72+
+- TypeScript 5.3+
+- Node.js 16+
+
+## License
+
+MIT
+
+## Version
+
+Current version: 0.1.0
+
+## Keywords
+
+- vega
+- fire-tv
+- content-launcher
+- media-controls
+- react-native
