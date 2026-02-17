@@ -1,0 +1,82 @@
+---
+title: Introduction
+description: A reference implementation demonstrating Vega OS APIs for Fire TV content integration
+---
+
+# Vega Sample Package
+
+The Vega Sample Package is a TypeScript reference implementation demonstrating two core Vega OS APIs for Fire TV applications:
+
+- **Content Launcher API** — Integrate with the Fire TV home launcher and Alexa voice commands for content search and playback
+- **Media Controls API** — Provide unified media control across diverse input modalities (remote, voice, touch)
+
+## What is Vega OS?
+
+Vega OS is Amazon's operating system for Fire TV devices. It provides APIs that enable streaming apps to deeply integrate with the Fire TV platform, offering users seamless content discovery and playback experiences through voice, remote control, and touch interfaces.
+
+## Key features
+
+<CardGroup cols={2}>
+  <Card title="Content Launcher API" icon="rocket">
+    Enable users to launch your content directly through Alexa voice commands and the Fire TV home screen
+  </Card>
+  <Card title="Media Controls API" icon="gamepad">
+    Integrate with Fire TV's unified media control system for consistent playback control across all input methods
+  </Card>
+  <Card title="TypeScript support" icon="code">
+    Fully typed interfaces with comprehensive TSDoc annotations for excellent IDE support
+  </Card>
+  <Card title="Production ready" icon="check">
+    Includes property-based tests and unit tests to ensure correctness and reliability
+  </Card>
+</CardGroup>
+
+## Use cases
+
+### Content Launcher API
+
+- **Voice-activated playback** — "Alexa, watch Seabound on MyApp"
+- **Content search** — "Alexa, find comedy movies on MyApp"
+- **Episodic content** — "Alexa, play season 1 episode 5 of The SeaShow"
+- **Deep linking** — Launch specific content from the Fire TV home screen
+
+### Media Controls API
+
+- **Unified playback control** — Handle play, pause, seek, and skip commands from any input source
+- **Picture-in-picture** — Manage multiple concurrent media sessions
+- **Session management** — Track playback state, position, and capabilities
+- **Endpoint discovery** — Register your app as a media provider for platform-wide control
+
+## Architecture
+
+The package is organized into two independent modules:
+
+```
+vega-sample-package/
+├── content-launcher/     # Content Launcher API implementation
+│   ├── types.ts         # Type definitions and interfaces
+│   ├── content-launcher.ts  # Processing logic
+│   └── examples/        # Usage examples
+└── media-controls/      # Media Controls API implementation
+    ├── types.ts         # Type definitions and interfaces
+    ├── session-manager.ts   # Session lifecycle management
+    ├── discovery.ts     # Endpoint discovery
+    └── examples/        # Usage examples
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Install the package and set up your development environment
+  </Card>
+  <Card title="Quickstart" icon="bolt" href="/quickstart">
+    Get started with a simple example in minutes
+  </Card>
+  <Card title="Content Launcher" icon="rocket" href="/content-launcher/overview">
+    Learn about the Content Launcher API
+  </Card>
+  <Card title="Media Controls" icon="gamepad" href="/media-controls/overview">
+    Learn about the Media Controls API
+  </Card>
+</CardGroup>
